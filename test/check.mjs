@@ -1,10 +1,10 @@
-// Diff harness: run entry/parse.js over the practice set and compare
+// Diff harness: run this repo's parse.js over the practice set and compare
 // byte-for-byte with practice/reference/expected.json (marked's own output).
 // Usage: node test/check.mjs [max-to-show]
 import { readFileSync } from 'node:fs';
 import { parse } from '../parse.js';
 
-const kit = new URL('../../markdown-render-speed-02-kit/', import.meta.url);
+const kit = new URL('../../../markdown-render-speed/markdown-render-speed-02-kit/', import.meta.url);
 const cases = JSON.parse(readFileSync(new URL('practice/input/cases.json', kit), 'utf8'));
 const expectedDoc = JSON.parse(readFileSync(new URL('practice/reference/expected.json', kit), 'utf8'));
 const expected = expectedDoc.cases.map((c) => c.html);
@@ -14,7 +14,12 @@ function firstDiff(a, b) {
   const n = Math.min(a.length, b.length);
   let i = 0;
   while (i < n && a[i] === b[i]) i++;
-  return { i, aCtx: JSON.stringify(a.slice(Math.max(0, i - 80), i + 120)), bCtx: JSON.stringify(b.slice(Math.max(0, i - 80), i + 120)), aLen: a.length, bLen: b.length };
+  return {
+    i,
+    aCtx: JSON.stringify(a.slice(Math.max(0, i - 80), i + 120)),
+    bCtx: JSON.stringify(b.slice(Math.max(0, i - 80), i + 120)),
+    aLen: a.length, bLen: b.length,
+  };
 }
 
 let pass = 0;

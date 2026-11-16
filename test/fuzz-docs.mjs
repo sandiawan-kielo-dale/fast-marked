@@ -1,15 +1,16 @@
-// Mutation fuzz: take real practice docs and mutate them, compare vs marked.
+// Mutation fuzz: take real practice docs and mutate them, compare this
+// repo's parse.js vs the real marked 18.1.3.
 // Usage: node test/fuzz-docs.mjs [count] [seed]
 import { readFileSync } from 'node:fs';
 import { parse as fastParse } from '../parse.js';
-import { marked } from '../../markdown-render-speed-02-kit/baselines/vendor/marked/marked.esm.js';
+import { marked } from '../../../markdown-render-speed/markdown-render-speed-02-kit/baselines/vendor/marked/marked.esm.js';
 
 const N = Number(process.argv[2] ?? 120);
 let seed = Number(process.argv[3] ?? 99);
 const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
 const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
 
-const kit = new URL('../../markdown-render-speed-02-kit/', import.meta.url);
+const kit = new URL('../../../markdown-render-speed/markdown-render-speed-02-kit/', import.meta.url);
 const cases = JSON.parse(readFileSync(new URL('practice/input/cases.json', kit), 'utf8'));
 const docs = cases.filter((c) => c.id.startsWith('doc-')).map((c) => c.markdown);
 const INSERTS = ['*', '**', '_', '__', '~~', '`', '``', '[', ']', '(', ')', '<', '>', '!', '|', '&', '\\*', '@', 'www.x.com', 'http://a.b', 'user@x.io', 'mailto:u@v.w', '#', '## ', '> ', '- ', '1. ', '---', '```', '  \n', ' ', 'é', '\t', 'a_b', 'foo*bar', '~x~', '***', '[a](b)', '![i](u)', '<div>', 'x@y', 'ftp://z.q', 'xmpp:a@b.c'];
@@ -49,7 +50,6 @@ for (let i = 0; i < N; i++) {
     fails++;
     if (fails <= 3) {
       console.log('=== MISMATCH #' + fails + ' (len ' + doc.length + ') ===');
-      // find first differing position
       let j = 0;
       while (j < Math.min(fast.length, ref.length) && fast[j] === ref[j]) j++;
       console.log('first diff at', j, 'context:', JSON.stringify(doc.slice(Math.max(0, j - 200), j + 200)));
@@ -58,4 +58,5 @@ for (let i = 0; i < N; i++) {
     }
   }
 }
-console.log(`doc-mutation fuzz: ${checked} docs, ${fails} mismatches`);
+console.log(`fuzz-docs: ${checked} mutated docs, ${fails} mismatches`);
+process.exit(fails ? 1 : 0);

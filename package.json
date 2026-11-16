@@ -1,1 +1,1 @@
-{"description":"Fast, byte-for-byte compatible drop-in replacement for marked 18.1.3 (GFM defaults) for the make.fun markdown-render-speed bounty","exports":{".":"./parse.js"},"license":"MIT","main":"parse.js","name":"fast-marked","type":"module","version":"1.0.0"}
+{"description":"A dependency-free Markdown renderer, byte-compatible with marked 18.1.3 and faster.","license":"MIT","main":"parse.js","name":"fast-marked","type":"module","version":"1.0.0"}
